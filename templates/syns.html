@@ -1,0 +1,12 @@
+$def with (text, syn_dict)
+
+<h2>Synonyms</h2>
+<p><em>$text</em></p>
+<ul>
+	$for pair in syn_dict:
+		<li>
+			<small>$pair[0]:</small>
+			$for word in pair[1]:
+				<strong>$word</strong>
+		</li>
+</ul>

@@ -1,0 +1,7 @@
+$def with (qtdict)
+
+<h2>Recent queries</h2>
+<ul>
+	$for key, value in qtdict:
+		<li><small>$key:</small> <strong>$value</strong></li>
+</ul>

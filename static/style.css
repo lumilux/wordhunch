@@ -1,0 +1,33 @@
+html {
+	font-size: 14px;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+body {
+	width: 720px;
+	margin: 0 auto;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	letter-spacing: -0.05em;
+}
+
+small {
+	color: #999;
+}
+
+ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+input#input_text {
+	width: 300px;
+}
+
+td, tr {
+	margin: 0;
+	padding: 0;
+}
+
