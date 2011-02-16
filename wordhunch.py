@@ -73,7 +73,10 @@ def preprocess_corpora():
 	for s_i in xrange(0, len(bwog_sents)/1000):
 		bwog_words.extend(nltk.pos_tag(bwog_sents[s_i]))
 	
-	all_tagged_words = brown_words + treebank_words + bwog_words
+	all_tagged_corpora = brown_words + treebank_words + bwog_words
+	
+	for corpus in all_tagged_corpora:
+		compute_concordance(corpus)
 
 def sim(dict_a, pairs_b):
 	dict_b = dict(pairs_b)
