@@ -4,9 +4,10 @@ $def with (text, syn_dict)
 <p><em>$text</em></p>
 <ul>
 	$for pair in syn_dict:
-		<li>
-			<small>$pair[0]:</small>
-			$for word in pair[1]:
-				<strong>$word</strong>
-		</li>
+		$if pair[1]:
+			<li>
+				<small>$pair[0]:</small>
+				$for word in pair[1]:
+					<strong>$word</strong>
+			</li>
 </ul>
