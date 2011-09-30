@@ -34,9 +34,10 @@ process_form = form.Form(
 )
 
 # 3 might be the best
-window = 3
-punctuation = '(),-.:?!;&$%@#~/\"\'<>[]{}+=_'
-tag_dict = {'N': 'n', 'V': 'v', 'ADJ': 'a', 'ADV': 'r'}
+# greater than 5 takes forever.
+window = 5
+punctuation = '(),-.:?!;&|$%@#~^–—\/\"\'<>[]{}+=_'
+tag_dict = {'N':'n', 'V':'v', 'ADJ':'a', 'ADV':'r'}
 pos_list = 'nvar'
 all_sents = []
 
@@ -76,18 +77,18 @@ def compute_concordance(words):
 def preprocess_corpora():
 	brown_words = brown.tagged_words(simplify_tags=True)
 	treebank_words = treebank.tagged_words(simplify_tags=True)
-	
+	'''
 	#this takes forever.
-	bwog_corpus = nltk.corpus.PlaintextCorpusReader('bwog-corpus-txt', '.*\.txt')
+	bwog_corpus = nltk.corpus.PlaintextCorpusReader('../bwog-corpus-txt', '.*\.txt')
 	bwog_sents = bwog_corpus.sents(bwog_corpus.fileids())
 	bwog_words = []
-	for s_i in xrange(0, len(bwog_sents)/100):
+	for s_i in xrange(0, len(bwog_sents)/100000):
 		#TODO: skip punctuation
 		simp_tagged_sent = [(word,simp_tag(tag)) for word,tag in nltk.pos_tag(bwog_sents[s_i])]
 		bwog_words.extend(simp_tagged_sent)
-	
-	all_tagged_words = brown_words + treebank_words + bwog_words
-	all_sents = brown.sents() + treebank.sents() + bwog_sents
+	'''
+	all_tagged_words = brown_words + treebank_words #+ bwog_words
+	all_sents = brown.sents() + treebank.sents() #+ bwog_sents
 	compute_concordance(all_tagged_words)
 
 # this takes about half an hour.
@@ -118,7 +119,7 @@ def get_syns(input_text):
 	#TODO
 	#+use sorted set instead of hash for word vectors
 	#+only use sorted set members with score > 1
-	# adjust context window
+	#+adjust context window
 	# lemmatize corpus words
 	# lemmatize input words
 	# remove number words
@@ -183,7 +184,7 @@ def get_syns(input_text):
 
 def get_process_form():
 	f = process_form()
-	return render.process(f)
+	return render.process(f, base=None)
 
 def get_recent_results():
 	queries = r_msg.sort('recent_queries', start=0, num=10, desc=True)
@@ -197,23 +198,7 @@ class help:
 
 class index:
 	def GET(self):
-		process = get_process_form()
-		
-		results = get_recent_results()
-		
-		return render.index(process, results)
-
-	def POST(self):
-		f = process_form()
-		if not f.validates():
-			return self.GET()
-		
-		user_data = web.input()
-		key = (int)(time.time()*100) #+"_"+str(web.ctx.ip)
-		r_msg.lpush('recent_queries', key)
-		r_msg.set(key, user_data.input_text)
-		
-		raise web.seeother('/')
+		return get_recent_results()
 
 class words:
 	def GET(self):
@@ -228,11 +213,16 @@ class words:
 		text = web.input().input_text
 		syn_dict = get_syns(text)
 		
+		key = (int)(time.time()*100)
+		r_msg.lpush('recent_queries', key)
+		r_msg.set(key, text)
+		
 		return render.syns(text, syn_dict)
 		
 
 if __name__ == "__main__":
+	#r_msg.flushdb()
 	r.flushdb()
 	preprocess_corpora()
-	cache_syns()
+	#cache_syns()
 	app.run()
