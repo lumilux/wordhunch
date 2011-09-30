@@ -1,2 +1,7 @@
 a synonym suggester from back when I was learning NLTK
 
+dependencies:
+    nltk
+    web.py
+    redis
+
